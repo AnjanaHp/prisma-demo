@@ -5,7 +5,7 @@ const prisma = require("../db/index");
 
 //  POST /api/books  -  Creates a new book
 router.post("/", async (req, res, next) => {
-  const { title, year, summary, quantity, genre, authorName } = req.body;
+  const { title, year, summary, quantity, genre, authorId } = req.body;
 
   const newBookData = {
     title,
@@ -13,7 +13,7 @@ router.post("/", async (req, res, next) => {
     summary,
     quantity,
     genre,
-    authorName,
+    authorId,
   };
   try {
     const newBook = await prisma.book.create({ data: newBookData });
@@ -29,7 +29,7 @@ router.get("/", async (req, res, next) => {
   try {
     const allBooks = await prisma.book.findMany({
       include: { author: true },
-      omit: { authorName: true },
+      omit: { authorId: true },
     });
     res.json(allBooks);
   } catch (error) {
@@ -45,7 +45,7 @@ router.get("/:bookId", async (req, res, next) => {
     const oneBook = await prisma.book.findUnique({
       where: { id: bookId },
       include: { author: true },
-      omit: { authorName: true },
+      omit: { authorId: true },
     });
     if (!oneBook) {
       res.status(404).json({ message: "Book not found" });
@@ -61,7 +61,7 @@ router.get("/:bookId", async (req, res, next) => {
 router.put("/:bookId", async (req, res, next) => {
   const { bookId } = req.params;
 
-  const { title, year, summary, quantity, genre, authorName } = req.body;
+  const { title, year, summary, quantity, genre, authorId } = req.body;
 
   const newBookDetails = {
     title,
@@ -69,7 +69,7 @@ router.put("/:bookId", async (req, res, next) => {
     summary,
     quantity,
     genre,
-    authorName,
+    authorId,
   };
 try {
   const newDeatils = await prisma.book.update({ where: { id: bookId }, data: newBookDetails })
@@ -88,6 +88,8 @@ res.json({ message: `Book with id ${bookId} was deleted successfully` });
 }catch (error) {
   next(error);
 }
+
+  
 
 });
 
